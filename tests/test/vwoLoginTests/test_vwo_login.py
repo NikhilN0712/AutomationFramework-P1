@@ -3,51 +3,40 @@ import time
 import allure
 import pytest
 from selenium import webdriver
+
 from tests.pageObjects.pom.LoginPage import LoginPage
 from tests.pageObjects.pom.dashboardPage import DashboardPage
+
 from tests.utils.commom_utils import webdriver_wait
 from tests.constants.constants import Constants
 
 
-@allure.epic("VWO App")
-@allure.feature("Login Test")
-class TestVWOLogin:
-    @pytest.mark.usefixtures("setup")
-    @pytest.mark.qa
-    def test_vwo_login_negative(self, setup):
-        try:  # TODO - 2.Exception Concept
-            driver = setup
-            driver.get(Constants.app_url())
-            loginPage = LoginPage(driver)
-            loginPage.login_to_vwo(user=self.username, pwd="123")
-            error_msg_element = loginPage.error_msg()
-            assert error_msg_element == "Your email, password, IP address or location did not match"
+# Assertions and use the Page Object class
 
-            if "Dashboard" not in driver.title:
-                Constants.take_screenshot(driver, "test_vwo_login_negative_tc0")
-            time.sleep(10)
-        except Exception as e:
-            print(e)
+@pytest.fixture()
+def setup():
+    driver = webdriver.Chrome()
+    driver.maximize_window()
+    driver.get(Constants.app_url())
+    return driver
 
-    @pytest.mark.usefixtures("setup")
-    @pytest.mark.qa
-    def test_vwo_login_positive(self, setup):
-        driver = setup
-        driver.get(Constants.app_url())
-        login_page = LoginPage(driver)
-        login_page.login_to_vwo(user=self.username, pwd=self.password)
-        dashboard_page = DashboardPage(driver)
-        username = dashboard_page.user_logged_in_text()
-        assert "Dashboard" in driver.title
-        assert "Aman Ji" == username
-        time.sleep(5)
 
-    @pytest.mark.usefixtures("setup")
-    @pytest.mark.qa
-    def test_vwo_login_negative_tc3(self, setup):
-        pass
+@allure.epic("VWO Login Test")
+@allure.feature("TC#0 - VWO App Negative Test")
+@pytest.mark.negative
+def test_vwo_login_negative(setup):
+    login_page = LoginPage(driver=setup)
+    login_page.login_to_vwo(usr="contact+atb7x@thetestingacademy.com", pwd="Wingify@1235")
+    time.sleep(2)
+    error_msg_element = login_page.get_error_message_text()
+    assert error_msg_element == "Your email, password, IP address or location did not match"
 
-    @pytest.mark.usefixtures("setup")
-    @pytest.mark.qa
-    def test_vwo_login_negative_tc4(self, setup):
-        pass
+
+@allure.epic("VWO Login Test")
+@allure.feature("TC#1 - VWO App Positive Test")
+@pytest.mark.positive
+def test_vwo_login_positive(setup):
+    login_page = LoginPage(driver=setup)
+    login_page.login_to_vwo(usr="pyatb3x@wingify.com", pwd="Wingify@1234")
+    dashboardPage = DashboardPage(driver=setup)
+    assert "Aman Ji" in dashboardPage.user_logged_in_text()

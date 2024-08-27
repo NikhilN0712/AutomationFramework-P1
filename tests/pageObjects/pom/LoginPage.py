@@ -1,61 +1,40 @@
-# Login Page Class
-import time
-
+# Page Class
+#
+#
 # Page Locators
 # Page Actions
-
-# WebDriver Init
+# Webdriver - Init
 # Custom Functions
-# No assertions(in Page Object Class)
+# No Assertion here ( They are not Test cases)
 
-# get email and send keys - email
-# get password and send keys - password
-# case 1 - click the submit button and navigate to dashboard Page
-# case 2 - invalid -> error message
-
-from selenium.webdriver.common.by import By
+from seleniumpagefactory.Pagefactory import PageFactory
 from tests.utils.commom_utils import webdriver_wait
+from selenium.webdriver.common.by import By
 
-#TODO - 5. Class and Object
-class LoginPage:  #TODO - 4. Encapsulation
 
-    def __init__(self, driver): #TODO - 6. Constructor
-
+class LoginPage(PageFactory):
+    # Webdriver - Init
+    def __init__(self, driver):
         self.driver = driver
+        self.highlight = True
 
-    # Page Locators
-    username = (By.ID, "login-username")
-    password = (By.NAME, "password")
-    submit_button = (By.XPATH, "//button[@id='js-login-btn']")
-    error_message = (By.CSS_SELECTOR, "#js-notification-box-msg")
 
-    # Remove them if you are not using them as of now
+        # Page Locators
 
-    # free_trail = (By.XPATH, "//a[normalize-space()='Start a free trial']")
-    # forgot_password_button = (By.XPATH, "//button[normalize-space()='Forgot Password?']")
-    # sso_login = (By.XPATH, "//button[normalize-space()='Sign in using SSO']")
-    # remember_checkbox = (By.XPATH, "//label[@for='checkbox-remember']//span[@class='checkbox-radio-button ng-scope']//*[name()='svg']")
+    locators = {
+        'username': ('CSS', "#login-username"),
+        'password': ('NAME', 'password'),
+        'error_message': ('CSS', '#js-notification-box-msg'),
+        'submit_button': ('XPATH', '//button[@id="js-login-btn"]')
+    }
+
 
     # Page Actions
 
-    def get_username(self):
-        return self.driver.find_element(*LoginPage.username)
+    def login_to_vwo(self, user, pwd):
+        self.username.set_text(user)
+        self.password.set_text(pwd)
+        self.submit_button.click_button()
 
-    def get_password(self):
-        return self.driver.find_element(*LoginPage.password)
-
-    def get_submit_button(self):
-        return self.driver.find_element(*LoginPage.submit_button)
-
-    def get_error_message(self):
-        webdriver_wait(driver=self.driver, element_tuple=self.username, timeout=5)
-        return self.driver.find_element(*LoginPage.error_message)
-
-    def login_to_vwo(self, usr, pwd):
-        self.get_username().send_keys(usr)
-        self.get_password().send_keys(pwd)
-        self.get_submit_button().click()
-
-
-    def get_error_message_text(self):
-        return self.get_error_message().text
+    def error_msg(self):
+        return self.error_message.get_text()

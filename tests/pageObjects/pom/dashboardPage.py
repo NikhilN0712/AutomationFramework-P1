@@ -1,3 +1,16 @@
+# Dashboard Page Class
+
+# Page Locators
+# Page Actions
+
+# WebDriver Init
+# Custom Functions
+# No assertions(in Page Object Class)
+
+
+# find user_logged_in -> PL
+# get user_logged_in text -> PA
+
 from selenium.webdriver.common.by import By
 from tests.utils.commom_utils import webdriver_wait
 
@@ -7,7 +20,7 @@ class DashboardPage:
 
         # Page Locators
 
-    user_logged_in = (By.XPATH, "//span[@data-qa='lufexuloga']")
+    user_logged_in = (By.ID, "js-login-btn")
 
     def get_user_logged_in(self):
         return self.driver.find_element(*DashboardPage.user_logged_in)
